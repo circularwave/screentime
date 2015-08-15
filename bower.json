@@ -1,0 +1,37 @@
+{
+  "name": "screentime",
+  "version": "0.3.0",
+  "homepage": "http://github.com/circularwave/screentime",
+  "authors": [
+    "Ashley Rudland <ashleyr@circularwave.co.uk>"
+  ],
+  "description": "Measure how much time things spend on-screen",
+  "main": [
+    "screentime.js"
+  ],
+  "ignore": [
+    "**/.*",
+    "gulpfile.js",
+    "test",
+    "src",
+    "config",
+    "demo",
+    "CONTRIBUTING.md"
+  ],
+  "dependencies": {
+    "angular": "~1.4.4"
+  },
+  "keywords": [
+    "screentime",
+    "$screentime",
+    "screen time",
+    "$screen time",
+    "angular on screen"
+  ],
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/circularwave/screentime.git"
+  }
+}
