@@ -19,7 +19,8 @@
     "CONTRIBUTING.md"
   ],
   "dependencies": {
-    "angular": "~1.4.4"
+    "angular": "~1.4.4",
+    "visibly.js": "~0.1.0"
   },
   "keywords": [
     "screentime",
