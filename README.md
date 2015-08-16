@@ -13,8 +13,21 @@ If the user switches tabs, the timer stops (using Addy Osmani's [Page Visibility
 ## Usage
 jQuery is NOT required in this version. Pass in the selector for each **unique element** you want to track, including a name for each. The callback option receives an object containing the data.
 
+Make sure you import the screentime module into your AngularJS module. Also make sure you pull the '$screentime' factory into your controller too.
+
 ```javascript
-$screentime({
+var app = angular.module('exampleApp', ['screentime']);
+
+app.controller('MainCtrl', function($screentime, $scope, $timeout) {
+
+}
+```
+
+From here you can simply call $starttime.start.
+
+```javascript
+$screentime.start({
+
   fields: [
     { selector: '#top',
       name: 'Top'
@@ -24,14 +37,44 @@ $screentime({
     },
     { selector: '#bottom',
       name: 'Bottom'
+    },
+    // Fields defined but not on page should be ignored
+    { selector: '#missing-elem',
+      name: 'Not on page'
     }
   ],
-  callback: function(data) {
+
+  // This is the interval in which the callback methods
+  // below gets called.
+  // Data is recorded every second but the callback is called
+  // on the interval you specify.
+  reportInterval: 1,
+
+  callback: function(data, log) {
+
     console.log(data);
-    // Example { Top: 5, Middle: 3 }
+
+    // log format will be based on fields you placed inside
+    // $screentime.start. So this will be something like
+    // { Top: 0, Middle: 0, Bottom: 0 }
+    console.log(log);
+
+    // Not required: In this example we're binding
+    // this to local scope for testing/displaying
+    // in UI.
+    $timeout(function() {
+      $scope.times = log;
+    });
+
   }
 });
 ```
+
+## Installation
+
+Via [bower][]:
+
+	$ bower install screentime
 
 ## Options
 #### `fields` array (required)
