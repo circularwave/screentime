@@ -143,10 +143,10 @@ angular.module('screentime')
     var reset = function() {
       stopTimers();
 
-      cache.forEach(function(val, key) {
+      for (var key in cache) {
         log[key] = 0;
         counter[key] = 0;
-      });
+      }
 
       startTimers();
     };

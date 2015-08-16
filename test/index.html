@@ -21,6 +21,18 @@
       text-align: center;
     }
 
+    .header .reset {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      width: 80px;
+      background: #fff;
+      color: #00170d;
+      opacity: 0.9;
+      z-index: 10000001;
+      border: none;
+    }
+
     #top {
       margin-top: 100px;
     }
@@ -29,6 +41,7 @@
 <body ng-controller="MainCtrl">
   <div class="header">
     <p>Top: {{times.Top}}s. Middle: {{times.Middle}}s. Bottom: {{times.Bottom}}s.</p>
+    <button class="reset" ng-click="reset()">Reset</button>
   </div>
   <div id="top" style="background: #eee; height: 500px">#top</div>
   <div id="middle" style="background: #ddd; height: 300px">#middle</div>
@@ -78,6 +91,10 @@
 
         }
       });
+
+      $scope.reset = function() {
+        $screentime.reset();
+      };
 
     });
   </script>
