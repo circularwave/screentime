@@ -1,12 +1,12 @@
 /*!
- * screentime.js | v0.3.1
+ * screentime.js | v0.3.3
  */
 
 angular.module('screentime', []);
 
 angular.module('screentime')
 
-.factory('$screentime',
+  .factory('$screentime',
 
   function($window) {
 
@@ -32,11 +32,14 @@ angular.module('screentime')
     function Field(elem) {
       this.selector = elem.selector;
       this.$elem = document.body.querySelector(elem.selector);
-      this.name = elem.name;
-      this.top = this.$elem.getBoundingClientRect().top;
-      this.height = this.$elem.offsetHeight;
-      this.bottom = this.top + this.height;
-      this.width = this.$elem.offsetWidth;
+
+      if (this.$elem !== null) {
+        this.name = elem.name;
+        this.top = this.$elem.getBoundingClientRect().top;
+        this.height = this.$elem.offsetHeight;
+        this.bottom = this.top + this.height;
+        this.width = this.$elem.offsetWidth;
+      }
     }
 
     function Viewport() {
@@ -48,6 +51,13 @@ angular.module('screentime')
 
     function onScreen(viewport, field) {
       var cond, buffered, partialView;
+
+      // Get new data on element
+      field = new Field({selector:field.selector,name:field.name});
+
+      if (field.height === 0 && field.width === 0) {
+        return false;
+      }
 
       // Field entirely within viewport
       if ((field.bottom <= viewport.bottom) && (field.top >= viewport.top)) {
@@ -78,6 +88,7 @@ angular.module('screentime')
       for (var key in cache) {
         var val = cache[key];
         if (onScreen(viewport, val)) {
+          console.log(val.name + ' counter hit');
           log[key] += 1;
           counter[key] += 1;
         }
@@ -100,6 +111,12 @@ angular.module('screentime')
       }
     }
 
+    function stopTimerIfHidden(timer) {
+      if (visibly.visibilityState() === 'hidden') {
+        clearInterval(timer);
+      }
+    }
+
     function startTimers() {
 
       if (!started) {
@@ -109,10 +126,12 @@ angular.module('screentime')
 
       looker = setInterval(function() {
         checkViewport();
+        stopTimerIfHidden(looker);
       }, 1000);
 
       reporter = setInterval(function() {
         report();
+        stopTimerIfHidden(reporter);
       }, options.reportInterval * 1000);
 
     }
@@ -134,13 +153,13 @@ angular.module('screentime')
     };
 
     var start = function(newOptions) {
-
       options = angular.extend({}, defaults, newOptions);
 
       // Convert percent string to number
       options.percentOnScreen = parseInt(options.percentOnScreen.replace('%', ''), 10);
 
-      if (!options.fields.length) {
+      if (options.fields.length <= 0) {
+        stopTimers();
         return;
       }
 
@@ -153,7 +172,10 @@ angular.module('screentime')
         }
       });
 
-      startTimers();
+      if (visibly.visibilityState() === 'visible') {
+        stopTimers();
+        startTimers();
+      }
 
       visibly.onHidden(function() {
         stopTimers();
@@ -165,9 +187,30 @@ angular.module('screentime')
       });
     };
 
+    var stop = function(name) {
+      // If no name was provided we assume stop everything
+      if (typeof name === 'undefined') {
+        stopTimers();
+      } else {
+        for (var i = 0; i < options.fields.length; i++) {
+          if (options.fields[i].name === name) {
+            delete cache[options.fields[i].name];
+            delete counter[options.fields[i].name];
+            delete log[options.fields[i].name];
+            options.fields.splice(i, 1);
+          }
+        }
+
+        if (options.fields.length == 0) {
+          stopTimers();
+        }
+      }
+    };
+
     return {
       start: start,
-      reset: reset
+      reset: reset,
+      stop: stop
     };
 
   });
